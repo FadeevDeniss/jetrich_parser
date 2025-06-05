@@ -19,8 +19,13 @@ def main(interval: int, parser):
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
 
-    task = ParsingTask(interval, parsing_task, parser)
+    task = ParsingTask(interval, parsing_task, parser, '48359605-1730-439f-9767-8ab6436c38dd')
+    task2 = ParsingTask(2 + interval, parsing_task, parser, 'ed5498e4-721b-4217-9a59-5ac9d01303c8')
+    task3 = ParsingTask(3 + interval, parsing_task, parser, '0df10d50-7faf-4c85-98b2-cd00424aa3d0')
+
     task.start()
+    task2.start()
+    task3.start()
 
     while True:
         try:

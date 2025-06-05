@@ -36,8 +36,8 @@ def configure_task_logger(name: str, log_dir: Path):
 
 
 def write_to_file(filename: str, data: list):
-    with open(filename, 'r+', encoding='utf-8') as d:
+    with open(filename, 'a+', encoding='utf-8') as d:
         last_row = d.read().split('\n')[-1]
         if last_row != data[-1]:
-            d.seek(0, 2)
+            d.write('\n')
             d.write('\n'.join(data))

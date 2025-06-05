@@ -3,7 +3,7 @@ import time
 
 from datetime import datetime
 from logging import Logger
-from typing import Any, Type
+from typing import Type
 
 from base_http_client import BaseHttpClient
 from conf import Settings
@@ -12,6 +12,8 @@ from utils import configure_task_logger, write_to_file
 
 class JetrichParser(BaseHttpClient):
     auth_token: str = None
+
+    AUTHORIZED: bool = False
 
     def __init__(self, settings: Type[Settings], headers: dict[str, str] = None):
         super().__init__()
@@ -58,14 +60,15 @@ class JetrichParser(BaseHttpClient):
         last_login_at = accounts['users'][0]['lastLoginAt']
         last_login_dt = datetime.fromtimestamp(int(last_login_at) / 1000)
 
+        self.AUTHORIZED = True
         self.logger.info(f'Successfully logged in at {last_login_dt}')
         self.logger.info(f'{self.login} finished execution, end time: {start_time - time.time()}')
 
-    def load_winners(self):
+    def load_winners(self, game_uuid: str):
         start_time = time.time()
         self.logger.info(f'Calling {self.load_winners}, Start time: {start_time}')
         response = self.perform_request(
-            'https://cloudfire.app/api/v1/games/48359605-1730-439f-9767-8ab6436c38dd/session?locale=ru&demo=false',
+            f'https://cloudfire.app/api/v1/games/{game_uuid}/session?locale=ru&demo=false',
             method='POST', auth_header=True
         )
 
@@ -86,7 +89,7 @@ class JetrichParser(BaseHttpClient):
         winners_response = self.perform_request('https://2de6b6b8be.fhciaglolw.net/gs2c/promo/race/v3/winners/',
                                                 params=params, json={"raceIds": [race_id]})
 
-        write_to_file('winners_data.txt', winners_response['winners'][0]['items'])
+        write_to_file(f'winners_data_{game_uuid}.txt', winners_response['winners'][0]['items'])
 
         self.logger.info(f'Data loaded')
         self.logger.info(f'{self.load_winners} finished execution, end time: {start_time - time.time()}')

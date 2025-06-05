@@ -32,6 +32,7 @@ class ParsingTask(BaseTask):
             self.execute(*self.args)
 
 
-def parsing_task(parser):
-    parser.login()
-    parser.load_winners()
+def parsing_task(parser, game_uuid: str):
+    if not parser.AUTHORIZED:
+        parser.login()
+    parser.load_winners(game_uuid=game_uuid)
